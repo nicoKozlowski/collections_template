@@ -13,19 +13,19 @@ public interface Function<T, U> {
   }
 
   static <T> Function<T, T> id() {
-    throw new UnsupportedOperationException("Diese Methode muss ich wohl selber noch implementieren");
+    return arg -> arg;
   }
 
   static  Function<Boolean, Boolean> not() {
-    throw new UnsupportedOperationException("Diese Methode muss ich wohl selber noch implementieren");
+    return arg -> !arg;
   }
   
   static <T, U, V> Function<V, U> compose(Function<T, U> g, Function<V, T> f) {
-    throw new UnsupportedOperationException("Diese Methode muss ich wohl selber noch implementieren");
+    return arg -> g.apply(f.apply(arg));
   }
 
   static <T,U,V> Function<U,Function<T,V>> flip(Function<T,Function<U,V>> f) {
-    throw new UnsupportedOperationException("Diese Methode muss ich wohl selber noch implementieren");
+    return u -> t -> f.apply(t).apply(u);
   }
 
   static <T, U, V> Function<T, V> andThen(Function<T, U> f, Function<U, V> g) {

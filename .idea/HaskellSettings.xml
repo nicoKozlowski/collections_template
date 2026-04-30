@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="HaskellSettingsState">
+    <option name="ghcPath" value="C:\ghcup\ghc\9.14.1\bin\ghc.exe" />
+    <option name="hlsPath" value="C:\ghcup\bin\haskell-language-server-wrapper.exe" />
+  </component>
+</project>
