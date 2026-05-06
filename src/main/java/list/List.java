@@ -27,6 +27,8 @@ public abstract class List<A> {
     return xs.foldl(f, s);
   }
 
+  protected abstract void buildString(StringBuilder sb);
+
   public List<A> cons(A a) {
     return new Cons<>(a, this);
   }
@@ -73,6 +75,13 @@ public abstract class List<A> {
     public <B> B foldl(Function<B, Function<A, B>> f, B s) {
       return s;
     }
+
+    public String toString() {
+      return "[]";
+    }
+    @Override
+    protected void buildString(StringBuilder sb) {
+    }
   }
 
   private static class Cons<A> extends List<A> {
@@ -103,11 +112,10 @@ public abstract class List<A> {
     }
 
     @Override
-    public boolean isEqualTo(List<A> xs){
+    public boolean isEqualTo(List<A> xs) {
       if (xs.isEmpty()) {
         return false;
-      }
-      else {
+      } else {
         Cons<A> that = (Cons<A>) xs;
         return this.head.equals(that.head)
                 && this.tail.isEqualTo(that.tail);
@@ -115,15 +123,32 @@ public abstract class List<A> {
     }
 
     @Override
-    public <B> B foldr(Function<A, Function<B,B>> f, B s) {
+    public <B> B foldr(Function<A, Function<B, B>> f, B s) {
       return f.apply(head).apply(tail.foldr(f, s));
     }
 
     @Override
-    public <B> B foldl(Function<B, Function<A,B>> f, B s) {
-      return tail.foldl(f,f.apply(s).apply(head));
+    public <B> B foldl(Function<B, Function<A, B>> f, B s) {
+      return tail.foldl(f, f.apply(s).apply(head));
     }
 
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder();
+      sb.append("[");
+      buildString(sb);
+      sb.append("]");
+      return sb.toString();
+    }
+
+    @Override
+    protected void buildString(StringBuilder sb) {
+      sb.append(head);
+      if (!tail.isEmpty()) {
+        sb.append(", ");
+        tail.buildString(sb);
+      }
+    }
   }
 
   @SuppressWarnings("unchecked")
