@@ -5,7 +5,7 @@ public interface Function<T, U> {
   U apply(T arg);
 
   default <V> Function<V, U> compose(Function<V, T> f) {
-    throw new UnsupportedOperationException("Diese Methode muss ich wohl selber noch implementieren");
+    return arg -> this.apply(f.apply(arg));
   }
 
   default <V> Function<T, V> andThen(Function<U, V> f) {
