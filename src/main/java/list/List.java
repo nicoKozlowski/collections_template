@@ -17,17 +17,39 @@ public abstract class List<A> {
 
   public abstract <B> B foldr(Function<A, Function<B,B>> f, B s);
 
-  public static <A,B> B foldr(Function<A, Function<B,B>> f, B s, List<A> xs) {
-    return xs.foldr(f, s);
-  }
-
   public abstract <B> B foldl(Function<B, Function<A, B>> f, B s);
 
-  public static <A, B> B foldl(Function<B, Function<A, B>> f, B s, List<A> xs) {
-    return xs.foldl(f, s);
-  }
-
   protected abstract void buildString(StringBuilder sb);
+
+  public abstract int length();
+
+  public abstract boolean elem(A x);
+
+  public abstract boolean any(Function<A, Boolean> p);
+
+  public abstract boolean all(Function<A, Boolean> p);
+
+  public abstract <B> List<B> map(Function<A, B> f);
+
+  public abstract List<A> filter(Function<A, Boolean> f);
+
+  public abstract A finde(Function<A, Boolean> f);
+
+  public abstract List<A> init();
+
+  public abstract A last();
+
+  public abstract List<A> take(int n);
+
+  public abstract List<A> drop(int n);
+
+  public abstract List<A> takeWhile(Function<A, Boolean> p);
+
+  public abstract List<A> dropWhile(Function<A, Boolean> p);
+
+  public abstract List<A> delete(A x);
+
+  public abstract List<A> reverse();
 
   public List<A> cons(A a) {
     return new Cons<>(a, this);
@@ -163,5 +185,47 @@ public abstract class List<A> {
       n = new Cons<>(a[i], n);
     }
     return n;
+  }
+
+  public static <A,B> B foldr(Function<A, Function<B,B>> f, B s, List<A> xs) {
+    return xs.foldr(f, s);
+  }
+
+  public static <A, B> B foldl(Function<B, Function<A, B>> f, B s, List<A> xs) {
+    return xs.foldl(f, s);
+  }
+
+  public static Integer sum(List<Integer> list) {
+    return list.foldl(acc -> x -> acc + x, 0);
+  }
+
+  public static Double prod(List<Double> list) {
+    return list.foldl(acc -> x -> acc * x, 1.0);
+  }
+
+  public static <A> List<A> append(List<A> list1, List<A> list2) {
+    return list1.foldr(x -> acc -> acc.cons(x), list2);
+  }
+
+  public static <A> List<A> concat(List<List<A>> list) {
+    return list.foldr(x -> acc -> append(x, acc), List.list());
+  }
+
+  public static boolean and(List<Boolean> list) {
+    return list.foldl(acc -> x -> acc && x, true);
+  }
+
+  public static boolean or(List<Boolean> list) {
+    return list.foldl(acc -> x -> acc || x, false);
+  }
+
+  public static Integer minimum(List<Integer> list) {
+    if (list.isEmpty()) throw new IllegalStateException();
+    return list.tail().foldl(acc -> x -> Math.min(acc, x), list.head());
+  }
+
+  public static Integer maximum(List<Integer> list) {
+    if (list.isEmpty()) throw new IllegalStateException();
+    return list.tail().foldl(acc -> x -> Math.max(acc, x), list.head());
   }
 }
