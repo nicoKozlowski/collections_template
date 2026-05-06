@@ -1,5 +1,7 @@
 package list;
 
+import java.util.function.Function;
+
 
 public abstract class List<A> {
 
@@ -13,6 +15,17 @@ public abstract class List<A> {
 
   public abstract boolean isEqualTo(List<A> xs);
 
+  public abstract <B> B foldr(Function<A, Function<B,B>> f, B s);
+
+  public static <A,B> B foldr(Function<A, Function<B,B>> f, B s, List<A> xs) {
+    return xs.foldr(f, s);
+  }
+
+  public abstract <B> B foldl(Function<B, Function<A, B>> f, B s);
+
+  public static <A, B> B foldl(Function<B, Function<A, B>> f, B s, List<A> xs) {
+    return xs.foldl(f, s);
+  }
 
   public List<A> cons(A a) {
     return new Cons<>(a, this);
@@ -51,6 +64,15 @@ public abstract class List<A> {
       return xs.isEmpty();
     }
 
+    @Override
+    public <B> B foldr(Function<A, Function<B,B>> f, B s) {
+      return s;
+    }
+
+    @Override
+    public <B> B foldl(Function<B, Function<A, B>> f, B s) {
+      return s;
+    }
   }
 
   private static class Cons<A> extends List<A> {
@@ -82,9 +104,24 @@ public abstract class List<A> {
 
     @Override
     public boolean isEqualTo(List<A> xs){
-      if (xs.isEmpty()) return false;
-      else return this.head.equals(xs.head())
-        && this.tail.equals(xs.tail());
+      if (xs.isEmpty()) {
+        return false;
+      }
+      else {
+        Cons<A> that = (Cons<A>) xs;
+        return this.head.equals(that.head)
+                && this.tail.isEqualTo(that.tail);
+      }
+    }
+
+    @Override
+    public <B> B foldr(Function<A, Function<B,B>> f, B s) {
+      return f.apply(head).apply(tail.foldr(f, s));
+    }
+
+    @Override
+    public <B> B foldl(Function<B, Function<A,B>> f, B s) {
+      return tail.foldl(f,f.apply(s).apply(head));
     }
 
   }
@@ -102,5 +139,4 @@ public abstract class List<A> {
     }
     return n;
   }
-
 }
