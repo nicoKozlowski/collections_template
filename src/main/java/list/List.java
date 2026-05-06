@@ -43,12 +43,12 @@ public abstract class List<A> {
 
     @Override
     public List<A> setHead(A h) {
-      throw new RuntimeException("To be implemented");
+      throw new IllegalStateException("setHead called on an empty list");
     }
 
     @Override
     public boolean isEqualTo(List<A> xs){
-      return false;
+      return xs.isEmpty();
     }
 
   }
@@ -77,12 +77,14 @@ public abstract class List<A> {
 
     @Override
     public List<A> setHead(A h) {
-      throw new RuntimeException("To be implemented");
+      return new Cons<>(h, tail);
     }
 
     @Override
     public boolean isEqualTo(List<A> xs){
-      return false;
+      if (xs.isEmpty()) return false;
+      else return this.head.equals(xs.head())
+        && this.tail.equals(xs.tail());
     }
 
   }
