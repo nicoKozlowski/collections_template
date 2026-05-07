@@ -51,6 +51,8 @@ public abstract class List<A> {
 
   public abstract List<A> reverse();
 
+  public abstract <B> List<B> concatMap(Function<A, List<B>> f);
+
   public List<A> cons(A a) {
     return new Cons<>(a, this);
   }
@@ -177,6 +179,11 @@ public abstract class List<A> {
 
     @Override
     public List<A> reverse() {
+      return List.list();
+    }
+
+    @Override
+    public <B> List<B> concatMap(Function<A, List<B>> f) {
       return List.list();
     }
   }
@@ -335,6 +342,11 @@ public abstract class List<A> {
     public List<A> reverse() {
       return foldl(acc -> x -> acc.cons(x), List.list());
     }
+
+    @Override
+    public <B> List<B> concatMap(Function<A, List<B>> f) {
+      return foldr(x -> acc -> append(f.apply(x), acc), List.list());
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -391,5 +403,20 @@ public abstract class List<A> {
   public static Integer maximum(List<Integer> list) {
     if (list.isEmpty()) throw new IllegalStateException();
     return list.tail().foldl(acc -> x -> Math.max(acc, x), list.head());
+  }
+
+  public static List<Integer> range(int start, int end) {
+    if (start > end) return List.list();
+    else return new Cons<>(start, range(start + 1, end));
+  }
+
+  public static List<String> words(String s) {
+    String[] word = s.trim().split("\\s+");
+    return wordsRec(word, 0);
+  }
+
+  private static List<String> wordsRec(String[] word, int i) {
+    if (i >= word.length) return List.list();
+    else return new Cons<>(word[i], wordsRec(word, i + 1));
   }
 }
