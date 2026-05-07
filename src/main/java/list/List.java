@@ -142,7 +142,7 @@ public abstract class List<A> {
 
     @Override
     public List<A> init() {
-      throw new IllegalStateException("init called on empty list");
+      return List.list();
     }
 
     @Override
@@ -245,6 +245,95 @@ public abstract class List<A> {
         sb.append(", ");
         tail.buildString(sb);
       }
+    }
+
+    @Override
+    public int length() {
+      return foldl(acc -> x -> acc + 1, 0);
+    }
+
+    @Override
+    public boolean elem(A x) {
+      return head.equals(x) || tail.elem(x);
+    }
+//    @Override
+//    public boolean elem(A x) {
+//      return any(y -> y.equals(x));
+//    }
+
+    @Override
+    public boolean any(Function<A, Boolean> p) {
+      return p.apply(head) || tail.any(p);
+    }
+
+    @Override
+    public boolean all(Function<A, Boolean> p) {
+      return p.apply(head) && tail.all(p);
+    }
+//    @Override
+//    public boolean all(Function<A, Boolean> p) {
+//      return !any(a -> !p.apply(a));
+//    }
+
+    @Override
+    public <B> List<B> map(Function<A, B> f) {
+      return foldr(x -> acc -> new Cons<>(f.apply(x), acc), List.list());
+    }
+
+    @Override
+    public List<A> filter(Function<A, Boolean> f) {
+      return foldr(x -> acc -> f.apply(x) ? acc.cons(x) : acc, List.list());
+    }
+
+    @Override
+    public A finde(Function<A, Boolean> f) {
+      return f.apply(head) ? head : tail.finde(f);
+    }
+
+    @Override
+    public List<A> init() {
+      if (tail.isEmpty()) return List.list();
+      else return new Cons<>(head, tail.init());
+    }
+
+    @Override
+    public A last() {
+      if (tail.isEmpty()) return head;
+      else return tail.last();
+    }
+
+    @Override
+    public List<A> take(int n) {
+      if (n <= 0 || isEmpty()) return List.list();
+      else return tail.take(n - 1).cons(head);
+    }
+
+    @Override
+    public List<A> drop(int n) {
+      if (n <= 0 || isEmpty()) return this;
+      else return tail.drop(n - 1);
+    }
+
+    @Override
+    public List<A> takeWhile(Function<A, Boolean> p) {
+      if (isEmpty() || !p.apply(head)) return List.list();
+      else return tail.takeWhile(p).cons(head);
+    }
+
+    @Override
+    public List<A> dropWhile(Function<A, Boolean> p) {
+      if (isEmpty() || !p.apply(head)) return this;
+      else return tail.dropWhile(p);
+    }
+
+    @Override
+    public List<A> delete(A x) {
+      return foldr(y -> acc -> y.equals(x) ? acc : acc.cons(y), List.list());
+    }
+
+    @Override
+    public List<A> reverse() {
+      return foldl(acc -> x -> acc.cons(x), List.list());
     }
   }
 
