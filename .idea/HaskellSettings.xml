@@ -3,5 +3,6 @@
   <component name="HaskellSettingsState">
     <option name="ghcPath" value="C:\ghcup\ghc\9.14.1\bin\ghc.exe" />
     <option name="hlsPath" value="C:\ghcup\bin\haskell-language-server-wrapper.exe" />
+    <option name="stackPath" value="C:\Users\Nico\AppData\Roaming\local\bin\stack.exe" />
   </component>
 </project>

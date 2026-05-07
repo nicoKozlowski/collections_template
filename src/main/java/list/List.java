@@ -104,6 +104,81 @@ public abstract class List<A> {
     @Override
     protected void buildString(StringBuilder sb) {
     }
+
+    @Override
+    public int length() {
+      return 0;
+    }
+
+    @Override
+    public boolean elem(A x) {
+      return false;
+    }
+
+    @Override
+    public boolean any(Function<A, Boolean> p) {
+      return false;
+    }
+
+    @Override
+    public boolean all(Function<A, Boolean> p) {
+      return true;
+    }
+
+    @Override
+    public <B> List<B> map(Function<A, B> f) {
+      return List.list();
+    }
+
+    @Override
+    public List<A> filter(Function<A, Boolean> f) {
+      return List.list();
+    }
+
+    @Override
+    public A finde(Function<A, Boolean> f) {
+      return null;
+    }
+
+    @Override
+    public List<A> init() {
+      throw new IllegalStateException("init called on empty list");
+    }
+
+    @Override
+    public A last() {
+      throw new IllegalStateException("last called on empty list");
+    }
+
+    @Override
+    public List<A> take(int n) {
+      return List.list();
+    }
+
+    @Override
+    public List<A> drop(int n) {
+      return List.list();
+    }
+
+    @Override
+    public List<A> takeWhile(Function<A, Boolean> p) {
+      return List.list();
+    }
+
+    @Override
+    public List<A> dropWhile(Function<A, Boolean> p) {
+      return List.list();
+    }
+
+    @Override
+    public List<A> delete(A x) {
+      return List.list();
+    }
+
+    @Override
+    public List<A> reverse() {
+      return List.list();
+    }
   }
 
   private static class Cons<A> extends List<A> {
