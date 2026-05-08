@@ -419,4 +419,20 @@ public abstract class List<A> {
     if (i >= word.length) return List.list();
     else return new Cons<>(word[i], wordsRec(word, i + 1));
   }
+
+  public static Integer euler1() {
+    return sum(range(1,999).filter(x -> x % 3 == 0 || x % 5 == 0));
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    } else if (!(obj instanceof List<?>)) {
+      return false;
+    } else {
+      List<?> that = (List<?>) obj;
+      return this.isEqualTo((List<A>) that);
+    }
+  }
 }
