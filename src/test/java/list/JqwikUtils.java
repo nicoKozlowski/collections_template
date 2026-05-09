@@ -66,7 +66,7 @@ public class JqwikUtils {
   private static <A> Arbitrary<Tuple<List<A>,List<A>>> equalLists2(Arbitrary<A> xa, int min, int max){
     return  xa.list().ofMinSize(min).ofMaxSize(max)
             .map(xs->Tuple.<List<A>,List<A>>tuple(fromCollection(xs),
-                    fromCollection(java.util.List.copyOf(xs))));
+                    fromCollection(new java.util.ArrayList<>(xs))));
   }
   // Just 4 Fun
   public static Arbitrary<Tuple<Integer,Integer>> diffInts(int min, int max) {

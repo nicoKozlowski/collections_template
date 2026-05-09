@@ -425,6 +425,7 @@ public abstract class List<A> {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
