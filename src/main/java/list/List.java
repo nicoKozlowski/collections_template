@@ -1,5 +1,6 @@
 package list;
 
+import fpinjava.Result;
 import java.util.function.Function;
 
 
@@ -52,6 +53,10 @@ public abstract class List<A> {
   public abstract List<A> reverse();
 
   public abstract <B> List<B> concatMap(Function<A, List<B>> f);
+
+  public abstract Result<A> headOption();
+
+  public abstract Result<A> find(Function<A, Boolean> f);
 
   public List<A> cons(A a) {
     return new Cons<>(a, this);
@@ -185,6 +190,17 @@ public abstract class List<A> {
     @Override
     public <B> List<B> concatMap(Function<A, List<B>> f) {
       return List.list();
+    }
+
+    @Override
+    public Result<A> headOption() {
+      return Result.empty();
+    }
+
+    @Override
+    public Result<A> find(Function<A, Boolean> f) {
+      return Result.empty();
+
     }
   }
 
@@ -347,7 +363,25 @@ public abstract class List<A> {
     public <B> List<B> concatMap(Function<A, List<B>> f) {
       return foldr(x -> acc -> append(f.apply(x), acc), List.list());
     }
+
+    @Override
+    public Result<A> headOption() {
+      return Result.success(head);
+    }
+
+    @Override
+    public Result<A> find(Function<A, Boolean> f) {
+      if (f.apply(head())) {
+        return Result.success(head());
+      } else {
+        return tail().find(f);
+      }
+    }
   }
+
+  //Vorteil von headOption
+  //head schmeißt Exception während headOption angibt dass die Liste leer ist bei Nil
+  //Bei cons gibt headOption wieder, dass die Methode funktioniert und die Liste somit nicht leer ist
 
   @SuppressWarnings("unchecked")
   public static <A> List<A> list() {
@@ -437,3 +471,28 @@ public abstract class List<A> {
     }
   }
 }
+
+//Probleme von Exceptions:
+//Fehler erst zur Laufzeit
+//Brechen den Programmablauf, macht es schwer nachzuvollziehen wo der Fehler liegt, da wir in catch Blöcken landen
+//Man weiß nicht ob der Fehler gewollt war oder nicht, könnte auch ein Fehler im vorherigen Code sein
+//Programm könnte crashen wenn dann Exception nicht richtig fängt und behandelt
+//Inkonsistenz im Code, Fehlerbehandlung im Code wird optional, da man einfach Exceptions werfen kann
+//Komposition schwer weil jeder Schritt eine Exception werfen könnte
+
+//Vorteile von Option gegenüber Optional:
+//Beide versuchen das gleiche zu Implementieren
+//Ein Wert kann vorhanden sein, muss aber nicht
+//Optional nur als Hilfsmittel gegen NullPointerExceptions gedacht
+//Eher für Rückgabewerte von Methoden gedacht
+//Option ist ein ADT perfekt für Funktionale Programmierung
+//Fehler sollen explizit implementiert werden um versteckte Laufzeitfehler zu verhindern
+//Optional benötigt explizite null Prüfungen, Funktioniell eher unsauber
+//Option brauch keine isPresent oder get Konstruktoren Entweder Some oder None
+//Option bietet somit bessere Kompositionen
+
+//Result bietet Fehlerursache gegenüber Option
+//Über Success, Failure oder Empty
+//Option gibt nur None wieder wenn es null ist aber keine Info darüber ob
+//Liste leer, fehler vorhanden, datei kaputt etc.
+

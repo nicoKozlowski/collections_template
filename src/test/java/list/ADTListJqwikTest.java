@@ -1,6 +1,7 @@
 package list;
 
 import fpinjava.Function;
+import fpinjava.Result;
 import net.jqwik.api.*;
 import net.jqwik.api.constraints.IntRange;
 import tuple.Tuple;
@@ -276,5 +277,33 @@ public class ADTListJqwikTest {
 
     return java.util.Objects.equals(actual, expected);
 
+  }
+
+  //axioms ∀l : List<A>, ∀x : A
+  //headOption(cons(x,l)) =  Result.success(x)
+  //headOption(empty)     =  Result.empty()
+  @Property
+  public <A> boolean headOption_cons(@ForAll("lists") List<A> l,
+                                     @ForAll("as") A x) {
+    return l.cons(x)
+            .headOption()
+            .equals(Result.success(x));
+  }
+
+  @Example
+  public boolean headOption_empty() {
+    return List.<Integer>list()
+            .headOption()
+            .equals(Result.empty());
+  }
+
+  //axioms ∀l : List<A>, ∀f : A->Boolean
+  @Property
+  public <A> boolean find_filter(
+          @ForAll("lists") List<A> list,
+          @ForAll Function<A, Boolean> f) {
+
+    return list.find(x -> f.apply(x))
+            .equals(list.filter(x -> f.apply(x)).headOption());
   }
 }
