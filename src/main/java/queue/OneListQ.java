@@ -7,7 +7,7 @@ import tuple.Tuple;
 import static list.List.list;
 import static tuple.Tuple.tuple;
 
-public class OneListQ<A> implements Queue<A> {
+public class OneListQ<A> extends AbstractQueue<A> {
 
 	private final List<A> elements;
 
@@ -16,11 +16,13 @@ public class OneListQ<A> implements Queue<A> {
 	}
 
 	// Laufzeit: O(n)
-	public OneListQ<A> enQueue(A elem) {
+	@Override
+	public Queue<A> enQueue(A elem) {
 		return new OneListQ<>(List.append(elements, List.list(elem)));
 	}
 
 	// Laufzeit: O(1)
+	@Override
 	public A front() {
 
 		if (isEmpty()) throw new IllegalStateException("empty queue");
@@ -28,6 +30,7 @@ public class OneListQ<A> implements Queue<A> {
 	}
 
 	// Laufzeit: O(1)
+	@Override
 	public Queue<A> deQueue() {
 
 		if (isEmpty()) throw new IllegalStateException("empty queue");
@@ -35,6 +38,7 @@ public class OneListQ<A> implements Queue<A> {
 	}
 
 	// Laufzeit: O(1)
+	@Override
 	public Tuple<A, Queue<A>> deQueueFront() {
 
 		if (isEmpty()) throw new IllegalStateException("empty queue");
@@ -42,11 +46,13 @@ public class OneListQ<A> implements Queue<A> {
 	}
 
 	// Laufzeit: O(1)
+	@Override
 	public boolean isEmpty() {
 		return elements.isEmpty();
 	}
 
 	// Laufzeit O(1)
+
 	public static <A> Queue<A> empty() {
 		return new OneListQ<>(list());
 	}
@@ -63,11 +69,9 @@ public class OneListQ<A> implements Queue<A> {
 		return elements;
 	}
 
-	// Laufzeit: O(n)
 	@Override
-	public boolean isEqualTo(Queue<A> q){
-		return elements.equals(q.toList());
+	public boolean equals(Object o) {
+		if (!(o instanceof Queue<?> q)) return false;
+		return this.toList().equals(q.toList());
 	}
-
-
 }

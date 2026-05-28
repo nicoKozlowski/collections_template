@@ -7,7 +7,7 @@ import static list.List.append;
 import static list.List.list;
 import static tuple.Tuple.tuple;
 
-public class TwoListQ<A> implements Queue<A> {
+public class TwoListQ<A> extends AbstractQueue<A> {
 
 	private final List<A> front;
 	private final List<A> rear;
@@ -27,7 +27,7 @@ public class TwoListQ<A> implements Queue<A> {
 	//Laufzeit: O(1)
 	@Override
 	public Queue<A> enQueue(A elem) {
-		return new TwoListQ<>(front, append(rear, list(elem))).normalize();
+		return new TwoListQ<>(front, rear.cons(elem)).normalize();
 	}
 
 	//Laufzeit: O(1)
@@ -73,21 +73,13 @@ public class TwoListQ<A> implements Queue<A> {
 
 	//Laufzeit: O(n)
 	@Override
-	public Queue<A> enQueueAll(List<A> xs) {
-		return new TwoListQ<>(front, append(rear, xs)).normalize();
-	}
-
-	//Laufzeit: O(n)
-	@Override
 	public List<A> toList() {
 		return append(front, rear.reverse());
 	}
 
-	//Laufzeit: O(n)
 	@Override
-	public boolean isEqualTo(Queue<A> q){
-		return toList().equals(q.toList());
+	public boolean equals(Object o) {
+		if (!(o instanceof Queue<?> q)) return false;
+		return this.toList().equals(q.toList());
 	}
-
-
 }
