@@ -1,32 +1,72 @@
 package queue;
 
 import list.List;
+import tuple.Tuple;
+
 
 import static list.List.list;
+import static tuple.Tuple.tuple;
 
 public class OneListQ<A> implements Queue<A> {
 
-	private OneListQ(){
+	private final List<A> elements;
+
+	private OneListQ(List<A> elements){
+		this.elements = elements;
 	}
 
+	// Laufzeit: O(n)
+	public OneListQ<A> enQueue(A elem) {
+		return new OneListQ<>(List.append(elements, List.list(elem)));
+	}
+
+	// Laufzeit: O(1)
+	public A front() {
+
+		if (isEmpty()) throw new IllegalStateException("empty queue");
+		else return elements.head();
+	}
+
+	// Laufzeit: O(1)
+	public Queue<A> deQueue() {
+
+		if (isEmpty()) throw new IllegalStateException("empty queue");
+		else return new OneListQ<>(elements.tail());
+	}
+
+	// Laufzeit: O(1)
+	public Tuple<A, Queue<A>> deQueueFront() {
+
+		if (isEmpty()) throw new IllegalStateException("empty queue");
+		else return tuple(front(), deQueue());
+	}
+
+	// Laufzeit: O(1)
+	public boolean isEmpty() {
+		return elements.isEmpty();
+	}
+
+	// Laufzeit O(1)
 	public static <A> Queue<A> empty() {
-		return new OneListQ<>();
+		return new OneListQ<>(list());
 	}
 
+	// Laufzeit: O(n)
 	@Override
 	public Queue<A> enQueueAll(List<A> xs) {
-		return new OneListQ<>();
+		return new OneListQ<>(List.append(elements, xs));
 	}
 
-
+	// Laufzeit: O(1)
 	@Override
 	public List<A> toList() {
-		return list();
+		return elements;
 	}
 
+	// Laufzeit: O(n)
 	@Override
 	public boolean isEqualTo(Queue<A> q){
-		return false;
+		return elements.equals(q.toList());
 	}
 
 
