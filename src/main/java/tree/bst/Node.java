@@ -1,6 +1,7 @@
 package tree.bst;
 
 import fpinjava.Result;
+import list.List;
 
 public final class Node<A extends Comparable<A>> extends Tree<A> {
 
@@ -114,5 +115,49 @@ public final class Node<A extends Comparable<A>> extends Tree<A> {
             return value;
         }
         return right.findMax();
+    }
+
+    //Laufzeit: O(n)
+    @Override
+    public List<A> inOrder() {
+        return List.append(
+                List.append(left.inOrder(), List.list(value)),
+                right.inOrder()
+        );
+    }
+
+    //Laufzeit: O(n)
+    @Override
+    public int sizeLeaf() {
+        int self = (left.isEmpty() && right.isEmpty()) ? 1 : 0;
+        return self + left.sizeLeaf() + right.sizeLeaf();
+    }
+
+    //Laufzeit: O(n)
+    @Override
+    public int sizeInner() {
+        int self = (!left.isEmpty() || !right.isEmpty()) ? 1 : 0;
+        return self + left.sizeInner() + right.sizeInner();
+    }
+
+    //Laufzeit: O(n)
+    @Override
+    public int sizeHalf() {
+        boolean half = left.isEmpty() ^ right.isEmpty();
+        int self = half ? 1 : 0;
+        return self + left.sizeHalf() + right.sizeHalf();
+    }
+
+    //Laufzeit: O(n)
+    @Override
+    public int sizeFull() {
+        int self = (!left.isEmpty() && !right.isEmpty()) ? 1 : 0;
+        return self + left.sizeFull() + right.sizeFull();
+    }
+
+    //Laufzeit: O(n)
+    @Override
+    public int sizeEmpty() {
+        return left.sizeEmpty() + right.sizeEmpty();
     }
 }

@@ -2,6 +2,8 @@ package tree.bst;
 
 import fpinjava.Result;
 
+import list.List;
+
 public abstract class Tree <A extends Comparable<A>>{
 
     public abstract boolean isEmpty();
@@ -27,4 +29,16 @@ public abstract class Tree <A extends Comparable<A>>{
     public abstract A findMin();
 
     public abstract A findMax();
+
+    public abstract List<A> inOrder();
+
+    public abstract int sizeLeaf();
+
+    public abstract int sizeInner();
+
+    public abstract int sizeHalf();
+
+    public abstract int sizeFull();
+
+    public abstract int sizeEmpty();
 }

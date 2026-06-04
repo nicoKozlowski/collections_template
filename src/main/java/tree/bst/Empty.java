@@ -1,6 +1,7 @@
 package tree.bst;
 
 import fpinjava.Result;
+import list.List;
 
 public final class Empty<A extends Comparable<A>> extends Tree<A> {
 
@@ -54,5 +55,35 @@ public final class Empty<A extends Comparable<A>> extends Tree<A> {
     @Override
     public A findMax() {
         throw new IllegalStateException("empty tree");
+    }
+
+    @Override
+    public List<A> inOrder() {
+        return List.list();
+    }
+
+    @Override
+    public int sizeLeaf() {
+        return 0;
+    }
+
+    @Override
+    public int sizeInner() {
+        return 0;
+    }
+
+    @Override
+    public int sizeHalf() {
+        return 0;
+    }
+
+    @Override
+    public int sizeFull() {
+        return 0;
+    }
+
+    @Override
+    public int sizeEmpty() {
+        return 1;
     }
 }

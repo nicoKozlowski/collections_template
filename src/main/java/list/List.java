@@ -429,14 +429,32 @@ public abstract class List<A> {
     return list.foldl(acc -> x -> acc || x, false);
   }
 
-  public static Integer minimum(List<Integer> list) {
-    if (list.isEmpty()) throw new IllegalStateException();
-    return list.tail().foldl(acc -> x -> Math.min(acc, x), list.head());
+  public static <A extends Comparable<A>> A minimum(List<A> list) {
+    if (list.isEmpty()) {
+      throw new IllegalStateException("empty list");
+    }
+
+    A min = list.head();
+    List<A> rest = list.tail();
+
+    return rest.foldl(acc -> x ->
+                    (x.compareTo(acc) < 0) ? x : acc,
+            min
+    );
   }
 
-  public static Integer maximum(List<Integer> list) {
-    if (list.isEmpty()) throw new IllegalStateException();
-    return list.tail().foldl(acc -> x -> Math.max(acc, x), list.head());
+  public static <A extends Comparable<A>> A maximum(List<A> list) {
+    if (list.isEmpty()) {
+      throw new IllegalStateException("empty list");
+    }
+
+    A max = list.head();
+    List<A> rest = list.tail();
+
+    return rest.foldl(acc -> x ->
+                    (x.compareTo(acc) > 0) ? x : acc,
+            max
+    );
   }
 
   public static List<Integer> range(int start, int end) {
