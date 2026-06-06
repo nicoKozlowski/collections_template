@@ -5,6 +5,8 @@ import net.jqwik.api.*;
 import net.jqwik.api.constraints.IntRange;
 import net.jqwik.api.Tuple;
 
+import java.util.Objects;
+
 import static list.List.list;
 
 public class TreeJqwikTest {
@@ -254,7 +256,7 @@ public class TreeJqwikTest {
 
         Integer result = t.findEq(x);
 
-        return result == expected;
+        return Objects.equals(result, expected);
     }
 
     @Data
