@@ -254,7 +254,7 @@ public class TreeJqwikTest {
 
         Integer result = t.findEq(x);
 
-        return result == expected;
+        return result.equals(expected);
     }
 
     @Data
