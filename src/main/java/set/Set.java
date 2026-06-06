@@ -30,4 +30,8 @@ public interface Set<A>  {
 
   boolean disjoint(Set<A> s);
 
+  Set<A> union(Set<A> s);
+
+  Set<A> intersection(Set<A> s);
+
 }
