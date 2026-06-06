@@ -206,22 +206,22 @@ public abstract class ADTSetJqwikTest {
 	// ∀a:Set, ∀b:Set :  a ∪ b = b ∪ a
 	@Property
 	public <A> boolean kommutativGesetzUnion(@ForAll("sets") Set<A> a,
-																					 @ForAll("sets") Set<A> b) {
+											 @ForAll("sets") Set<A> b) {
 		return a.union(b).equals(b.union(a));
 	}
 
 	// ∀a:Set, ∀b:Set : a ∩ b = b ∩ a
 	@Property
 	public <A> boolean kommutativGesetzIntersect(@ForAll("sets") Set<A> a,
-																							 @ForAll("sets") Set<A> b) {
+												 @ForAll("sets") Set<A> b) {
 		return a.intersection(b).equals(b.intersection(a));
 	}
 
 	// ∀a:Set, ∀b:Set, ∀c:Set : a ∪ (b ∪ c) = (a ∪ b) ∪ c
 	@Property
 	public <A> boolean assoziativGesetzUnion(@ForAll("sets") Set<A> a,
-																					 @ForAll("sets") Set<A> b,
-																					 @ForAll("sets") Set<A> c) {
+											 @ForAll("sets") Set<A> b,
+											 @ForAll("sets") Set<A> c) {
 		return a.union(b.union(c)).equals((a.union(b)).union(c));
 	}
 
@@ -229,16 +229,16 @@ public abstract class ADTSetJqwikTest {
 	// ∀a:Set, ∀b:Set, ∀c:Set : a ∩ (b ∩ c) = (a ∩ b) ∩ c
 	@Property
 	public <A> boolean assoziativGesetzIntersect(@ForAll("sets") Set<A> a,
-																							 @ForAll("sets") Set<A> b,
-																							 @ForAll("sets") Set<A> c) {
+												@ForAll("sets") Set<A> b,
+												 @ForAll("sets") Set<A> c) {
 		return a.intersection(b.intersection(c)).equals((a.intersection(b)).intersection(c));
 	}
 
 	// ∀a:Set, ∀b:Set, ∀c:Set : a ∪ (b ∩ c) = (a ∪ b) ∩ (a ∪ c)
 	@Property
 	public <A> boolean distributivGesetz(@ForAll("sets") Set<A> a,
-																       @ForAll("sets") Set<A> b,
-																       @ForAll("sets") Set<A> c) {
+										 @ForAll("sets") Set<A> b,
+										 @ForAll("sets") Set<A> c) {
 		return a.union(b.intersection(c)).equals((a.union(b)).intersection(a.union(c)));
 	}
 	
@@ -268,5 +268,59 @@ public abstract class ADTSetJqwikTest {
 												        @ForAll("sets") Set<A> b,
 												        @ForAll("sets") Set<A> c) {
 		return a.union(b).union(c).equals(a.union(b.union(c)));
+	}
+
+	@Property
+	public <A extends Comparable<A>> boolean lookupEq_insert(
+			@ForAll("sets") Set<A> s,
+			@ForAll("as") A x,
+			@ForAll("as") A y) {
+
+		return s.insert(x).lookupEq(y).equals(x.equals(y)
+				? Result.success(x)
+				: s.lookupEq(y));
+	}
+
+	@Property
+	public <A extends Comparable<A>> boolean lookupEq_delete(
+			@ForAll("sets") Set<A> s,
+			@ForAll("as") A x,
+			@ForAll("as") A y) {
+
+		return s.delete(x).lookupEq(y).equals(x.equals(y)
+				? Result.empty()
+				: s.lookupEq(y));
+	}
+
+	@Property
+	<A extends Comparable<A>> boolean lookupMin_any(
+			@ForAll("sets") SortedSet<A> s) {
+		Assume.that(!s.isEmpty());
+		return s.lookupMin().exists(x -> x.equals(s.findMin()));
+	}
+
+	@Property
+	<A extends Comparable<A>> boolean lookupMin_all(
+			@ForAll("sets") SortedSet<A> s) {
+
+		Assume.that(!s.isEmpty());
+
+		return s.all(x -> s.lookupMin().exists(min ->
+						x.compareTo(min) >= 0));
+	}
+
+	@Property
+	<A extends Comparable<A>> boolean lookupMax_any(
+			@ForAll("sets") SortedSet<A> s) {
+		Assume.that(!s.isEmpty());
+		return s.lookupMax().exists(x -> x.equals(s.findMax()));
+	}
+
+	@Property
+	<A extends Comparable<A>> boolean lookupMax_all(
+			@ForAll("sets") SortedSet<A> s) {
+		Assume.that(!s.isEmpty());
+		return s.all(x -> s.lookupMax().exists(max ->
+						x.compareTo(max) <= 0));
 	}
 }

@@ -272,6 +272,9 @@ public class TreeSet<A extends Comparable<A>> implements SortedSet<A> {
 		return fromList(List.list(s.split(" ")));
 	}
 
-
+	@Override
+	public Result<A> lookupEq(A e) {
+		return this.toList().find(a -> a.equals(e));
+	}
 }
 
