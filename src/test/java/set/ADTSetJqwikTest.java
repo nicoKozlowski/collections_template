@@ -156,7 +156,7 @@ public abstract class ADTSetJqwikTest {
 	// ∀s:Set<A>, ∀x:A, ∀y:A : findEq(y,delete(x,s))	= x=y ? null : findEq(y,s)
 	@Property
 	public <A> boolean findEq_delete(@ForAll("sets") Set<A> s, @ForAll("as") A x, @ForAll("as") A y) {
-		return s.delete(x).findEq(y).equals((x == y ? null : s.findEq(y)));
+		return Objects.equals(s.delete(x).findEq(y), (x == y ? null : s.findEq(y)));
 	}
 
 
