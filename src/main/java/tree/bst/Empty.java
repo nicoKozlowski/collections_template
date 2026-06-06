@@ -35,11 +35,9 @@ public final class Empty<A extends Comparable<A>> extends Tree<A> {
         return this;
     }
 
-
-
     @Override
     public A findEq(A x) {
-        throw new IllegalStateException("empty tree");
+        return null;
     }
 
     @Override

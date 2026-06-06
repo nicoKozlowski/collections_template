@@ -149,13 +149,13 @@ public abstract class ADTSetJqwikTest {
 	// ∀s:Set<A>, ∀x:A, ∀y:A : findEq(y,insert(x,s)) = x=y ? x : findEq(y,s)
 	@Property
 	public <A> boolean findEq_insert(@ForAll("sets") Set<A> s, @ForAll("as") A x, @ForAll("as") A y) {
-		return s.insert(x).findEq(y) == (x == y ? x : s.findEq(y));
+		return s.insert(x).findEq(y).equals((x == y ? x : s.findEq(y)));
 	}
 	
 	// ∀s:Set<A>, ∀x:A, ∀y:A : findEq(y,delete(x,s))	= x=y ? null : findEq(y,s)
 	@Property
 	public <A> boolean findEq_delete(@ForAll("sets") Set<A> s, @ForAll("as") A x, @ForAll("as") A y) {
-		return s.delete(x).findEq(y) == (x == y ? null : s.findEq(y));
+		return s.delete(x).findEq(y).equals((x == y ? null : s.findEq(y)));
 	}
 
 
