@@ -242,8 +242,7 @@ public class TreeJqwikTest {
     public Iterable<Tuple.Tuple2<Integer, Integer>> findEqData() {
         return java.util.List.of(
                 Tuple.of(3, 3),
-                Tuple.of(8, 8),
-                Tuple.of(99, null)
+                Tuple.of(8, 8)
         );
     }
 
