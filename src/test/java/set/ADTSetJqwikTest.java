@@ -9,6 +9,7 @@ import tuple.Tuple;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 import static list.JqwikUtils.equalLists;
 import static list.JqwikUtils.reverse;
@@ -143,13 +144,13 @@ public abstract class ADTSetJqwikTest {
 	// ∀s:Set<A>, ∀x:A, ∀y:A : delete(y,insert(x,s)) = x=y ? delete(y,s) : insert(x,delete(y,s))
 	@Property
 	public <A> boolean delete_insert(@ForAll("sets") Set<A> s, @ForAll("as") A x, @ForAll("as") A y) {
-		return s.insert(x).delete(y).equals(x.equals(y) ? s.delete(y) : s.delete(y).insert(x));
+		return Objects.equals(s.insert(x).delete(y), x.equals(y) ? s.delete(y) : s.delete(y).insert(x));
 	}
 
 	// ∀s:Set<A>, ∀x:A, ∀y:A : findEq(y,insert(x,s)) = x=y ? x : findEq(y,s)
 	@Property
 	public <A> boolean findEq_insert(@ForAll("sets") Set<A> s, @ForAll("as") A x, @ForAll("as") A y) {
-		return s.insert(x).findEq(y).equals((x == y ? x : s.findEq(y)));
+		return Objects.equals(s.insert(x).findEq(y), (x == y ? x : s.findEq(y)));
 	}
 	
 	// ∀s:Set<A>, ∀x:A, ∀y:A : findEq(y,delete(x,s))	= x=y ? null : findEq(y,s)
