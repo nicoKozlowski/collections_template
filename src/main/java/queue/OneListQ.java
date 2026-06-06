@@ -57,12 +57,6 @@ public class OneListQ<A> extends AbstractQueue<A> {
 		return new OneListQ<>(list());
 	}
 
-	// Laufzeit: O(n)
-	@Override
-	public Queue<A> enQueueAll(List<A> xs) {
-		return new OneListQ<>(List.append(elements, xs));
-	}
-
 	// Laufzeit: O(1)
 	@Override
 	public List<A> toList() {
