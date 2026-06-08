@@ -28,10 +28,6 @@ public interface Set<A>  {
 
    A findMax();
 
-   Result<A> lookupMin();
-
-   Result<A> lookupMax();
-
   boolean any(Function<A, Boolean> p);
 
   boolean all(Function<A, Boolean> p);
