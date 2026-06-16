@@ -14,4 +14,11 @@ public interface SortedSet<A extends Comparable<A>> extends Set<A>{
     Result<A> lookupMin();
 
     Result<A> lookupMax();
+
+    @Override
+    SortedSet<A> insert(A e);
+
+    @Override
+    SortedSet<A> delete(A e);
+
 }
