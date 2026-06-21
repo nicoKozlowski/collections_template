@@ -1,6 +1,9 @@
 package list;
 
 import fpinjava.Result;
+import map.SortedMap;
+import map.TreeMap;
+
 import java.util.function.Function;
 
 
@@ -487,6 +490,22 @@ public abstract class List<A> {
       List<?> that = (List<?>) obj;
       return this.isEqualTo((List<A>) that);
     }
+  }
+
+  public <B extends Comparable<B>> SortedMap<B, List<A>> groupBy(fpinjava.Function<A, B> f) {
+
+    return foldr(
+            a -> acc -> {
+              B key = f.apply(a);
+
+              return acc.insertWith(
+                      oldList -> newList -> oldList.cons(a),
+                      key,
+                      List.list(a)
+              );
+            },
+            TreeMap.empty()
+    );
   }
 }
 

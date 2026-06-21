@@ -9,12 +9,19 @@ public class Entry<K extends Comparable<K>, V>
 
 	@Override
 	public int compareTo(Entry<K,V> other) {
-		return 0;
+		return this.key.compareTo(other.key);
 	}
 
 	public Entry(K key, V value) {
 		this.key = key;
 		this.value = value;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Entry<?, ?> other)) return false;
+		return key.equals(other.key);
 	}
 
 }

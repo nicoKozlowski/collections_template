@@ -1,8 +1,12 @@
 package map;
 
+import fpinjava.Result;
 import list.List;
 import net.jqwik.api.*;
 import tuple.Tuple;
+
+import java.util.Objects;
+
 import static list.List.list;
 import static map.JqwikUtils.*;
 import static tuple.Tuple.tuple;
@@ -98,7 +102,7 @@ public abstract class ADTSortedMapJqwikTest {
 	// isEmpty(empty)	= true
 	@Example
 	boolean isEmpty_empty(){
-		return false;
+		return empty().isEmpty();
 	}
 	
 	// ∀m:Map<K,V>, ∀k:K, ∀v:V
@@ -108,14 +112,14 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean isEmpty_insert(@ForAll("maps")  SortedMap<K,V> m,
 												 @ForAll("keys")   K k,
 												 @ForAll("values") V v){
-		return false;
+		return !m.insert(k, v).isEmpty();
 	}
 	
 	// ∀k:K : member(k,empty) = false
 	@Property
 	<K extends Comparable<K>>
 	boolean member_empty(@ForAll("keys") K k){
-		return false;
+		return !this.<K,Object>empty().member(k);
 	}
 	
 	// ∀m:Map<K,V>, ∀k1,k2:K, ∀v:V
@@ -126,7 +130,8 @@ public abstract class ADTSortedMapJqwikTest {
 												@ForAll("keys") K k1,
 												@ForAll("keys") K k2,
 												@ForAll("values") V v){
-		return false;
+		return m.insert(k1, v).member(k2)
+				== (k1.equals(k2) || m.member(k2));
 	}
 	
 	// ∀m:Map<K,V>, ∀k1,k2:K
@@ -136,13 +141,14 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean member_delete(@ForAll("maps")  SortedMap<K,V> m,
 												@ForAll("keys") K k1,
 												@ForAll("keys") K k2){
-		return false;
+		return m.delete(k1).member(k2)
+				== (!k1.equals(k2) && m.member(k2));
 	}
 
 	// size(empty) =  0
 	@Example
-	boolean size_empty(){
-		return false;
+	boolean size_empty() {
+		return empty().size() == 0;
 	}
 	
 	// ∀m:Map<K,V>, ∀k:K, ∀v:V
@@ -152,7 +158,10 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean size_insert(@ForAll("maps")  SortedMap<K,V> m,
 											@ForAll("keys") K k,
 											@ForAll("values") V v){
-		return false;
+		return m.insert(k, v).size()
+				== (!m.member(k)
+				? m.size() + 1
+				: m.size());
 	}
 
 	// ∀m:Map<K,V>, ∀k1,k2:K, ∀v1,∀v2:V
@@ -165,7 +174,13 @@ public abstract class ADTSortedMapJqwikTest {
 												@ForAll("keys") K k2,
 												@ForAll("values") V v1,
 												@ForAll("values") V v2){
-		return false;
+		return m.insert(k1, v1)
+				.insert(k2, v2)
+				.isEqualTo(
+						k1.equals(k2)
+								? m.insert(k2, v2)
+								: m.insert(k2, v2).insert(k1, v1)
+				);
 	}
 
 	// ∀m:Map<K,V>, ∀k1,k2:K, ∀v:V
@@ -176,7 +191,14 @@ public abstract class ADTSortedMapJqwikTest {
 												@ForAll("keys") K k1,
 												@ForAll("keys") K k2,
 												@ForAll("values") V v){
-		return false;
+		return m.insert(k1, v)
+				.delete(k2)
+				.isEqualTo(
+						k1.equals(k2)
+								? m.delete(k2)
+								: m.delete(k2)
+								  .insert(k1, v)
+				);
 	}
 
 	// ∀m:Map<K,V>, ∀k1,k2:K, ∀v:V
@@ -187,7 +209,10 @@ public abstract class ADTSortedMapJqwikTest {
 										 @ForAll("keys") K k1,
 										 @ForAll("keys") K k2,
 										 @ForAll("values") V v){
-		return false; //null-sicher vergleichen!
+		return java.util.Objects.equals(
+				m.insert(k1, v).get(k2),
+				k1.equals(k2) ? v : m.get(k2)
+		); //null-sicher vergleichen!
 	}
 
 
@@ -199,7 +224,10 @@ public abstract class ADTSortedMapJqwikTest {
 												@ForAll("keys") K k1,
 												@ForAll("keys") K k2,
 												@ForAll("values") V v){
-		return false;
+		return m.insert(k1, v).lookup(k2)
+				.equals(k1.equals(k2)
+				? Result.success(v)
+				: m.lookup(k2));
 	}
 
 	// ∀m:Map<K,V>, ∀k1,k2:K
@@ -209,7 +237,11 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean get_delete(@ForAll("maps")  SortedMap<K,V> m,
 										 @ForAll("keys") K k1,
 										 @ForAll("keys") K k2){
-		return false; //null-sicher vergleichen!
+		return Objects.equals(m.delete(k1).get(k2)
+				, k1.equals(k2)
+						? null
+						: m.get(k2)
+		); //null-sicher vergleichen!
 	}
 
 	// ∀m:Map<K,V>, ∀k1,k2:K
@@ -219,13 +251,18 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean lookup_delete(@ForAll("maps")  SortedMap<K,V> m,
 												@ForAll("keys") K k1,
 												@ForAll("keys") K k2){
-		return false;
+		return m.delete(k1).lookup(k2)
+				.equals(k1.equals(k2)
+						? Result.empty()
+						: m.lookup(k2)
+				);
 	}
 
 	// fromList([]) = empty
 	@Example
 	boolean testFromList(){
-		return false;
+		return TreeMap.fromList(List.list())
+				.isEqualTo(empty());
 	}
 
 	// ∀k : K, ∀v : V, ∀xs
@@ -235,7 +272,12 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean testFromList(@ForAll("keys")   K k,
 											 @ForAll("values") V v,
 											 @ForAll("keyValueLists") List<Tuple<K,V>> xs) {
-		return false;
+		return TreeMap
+				.fromList(List.append(xs, List.list(Tuple.tuple(k, v))))
+				.equals(TreeMap
+						.fromList(xs)
+						.insert(k, v)
+				);
 	}
 
 
@@ -243,14 +285,14 @@ public abstract class ADTSortedMapJqwikTest {
 	@Property
 	<K extends Comparable<K>,V>
 	boolean emptyMapIsSubmapOfAllMaps(@ForAll("maps") SortedMap<K,V> m) {
-		return false;
+		return TreeMap.<K, V>empty().isSubmapOf(m);
 	}
 
 	// ∀m:Map<K,V> : m ⊆ m
 	@Property
 	<K extends Comparable<K>,V>
 	boolean everyMapIsSubmapOfItself(@ForAll("maps") SortedMap<K,V> m) {
-		return false;
+		return m.isSubmapOf(m);
 	}
 
 	// ∀a:Map<K,V>, ∀b:Map<K,V>, ∀c:Map<K,V>
@@ -260,7 +302,11 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean assoziativGesetzUnion(@ForAll("maps") SortedMap<K,V> a,
 																@ForAll("maps") SortedMap<K,V> b,
 																@ForAll("maps") SortedMap<K,V> c) {
-		return false;
+		return a.union(b.union(c))
+				.equals(
+						(a.union(b)
+								.union(c)
+						));
 	}
 
 	// ∀a:Map<K,V>, ∀b:Map<K,V>, ∀c:Map<K,V>
@@ -270,7 +316,8 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean assoziativGesetzIntersect(@ForAll("maps") SortedMap<K,V> a,
 																		@ForAll("maps") SortedMap<K,V> b,
 																		@ForAll("maps") SortedMap<K,V> c) {
-		return false;
+		return a.intersection(b.intersection(c))
+				.isEqualTo(a.intersection(b).intersection(c));
 	}
 
 	// ∀a:Map<K,V>, ∀b:Map<K,V>, ∀c:Map<K,V>
@@ -280,7 +327,14 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean distributivGesetz(@ForAll("maps") SortedMap<K,V> a,
 														@ForAll("maps") SortedMap<K,V> b,
 														@ForAll("maps") SortedMap<K,V> c) {
-		return false;
+		return a.intersection(b.union(c))
+				.equals(
+						(a.intersection(b))
+								.union(
+										a.intersection(c)
+								)
+
+		);
 	}
 
 	// ∀a:Map<K,V>, ∀b:Map<K,V>
@@ -289,7 +343,7 @@ public abstract class ADTSortedMapJqwikTest {
 	<K extends Comparable<K>,V>
 	boolean absorptionsGesetz(@ForAll("maps") SortedMap<K,V> a,
 														@ForAll("maps") SortedMap<K,V> b) {
-		return false;
+		return a.union(a.intersection(b)).isEqualTo(a);
 	}
 
 	// ∀a:Map<K,V>, ∀b:Map<K,V>, ∀k:K :
@@ -301,7 +355,15 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean defOfUnionGet(@ForAll("maps") SortedMap<K,V> a,
 												@ForAll("maps") SortedMap<K,V> b,
 												@ForAll("keys")   K k) {
-		return false; //null-sicher vergleichen!
+
+
+		return Objects.equals(a.union(b).get(k)
+				, a.member(k)
+				? a.get(k)
+						: b.member(k)
+						? b.get(k)
+						: null
+		); //null-sicher vergleichen!
 	}
 
 	// ∀a:Map<K,V>, ∀b:Map<K,V>, ∀k:K :
@@ -313,7 +375,14 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean defOfUnionLookup(@ForAll("maps") SortedMap<K,V> a,
 										 @ForAll("maps") SortedMap<K,V> b,
 										 @ForAll("keys")   K k) {
-		return false;
+		return a.union(b).lookup(k)
+				.equals(
+					a.member(k)
+						? a.lookup(k)
+							: b.member(k)
+						? b.lookup(k)
+							: Result.empty()
+				);
 	}
 
 	// ∀a:Map<K,V>, ∀b:Map<K,V>, ∀k:K
@@ -323,7 +392,11 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean defOfIntersectionGet(@ForAll("maps") SortedMap<K,V> a,
 															 @ForAll("maps") SortedMap<K,V> b,
 															 @ForAll("keys")   K k) {
-		return false;
+		return Objects.equals(a.intersection(b).get(k)
+				, (a.member(k) && b.member(k))
+				? a.get(k)
+				: null
+		);
 	}
 
 	// ∀a:Map<K,V>, ∀b:Map<K,V>, ∀k:K
@@ -333,7 +406,13 @@ public abstract class ADTSortedMapJqwikTest {
 	boolean defOfIntersectionLookup(@ForAll("maps") SortedMap<K,V> a,
 																	@ForAll("maps") SortedMap<K,V> b,
 																	@ForAll("keys")   K k) {
-		return false;
+		return a.intersection(b).lookup(k)
+				.equals(
+						a.member(k)
+						&& b.member(k)
+						? a.lookup(k)
+								: Result.empty()
+				);
 	}
 
 	@Example
