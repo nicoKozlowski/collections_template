@@ -1,5 +1,6 @@
 package graphMap;
 
+import graphMap.map.MapGraph;
 import list.List;
 import net.jqwik.api.*;
 import tuple.Tuple;
@@ -89,7 +90,7 @@ public abstract class ADTGraphJqwikTest {
   // isEmpty(empty)	= True
   @Example
   boolean isEmpty_empty(){
-    return false;
+    return this.empty().isEmpty();
   }
 
   // ∀ g:Graph<A,B>, ∀ e:(A,A), ∀w:B
@@ -99,14 +100,14 @@ public abstract class ADTGraphJqwikTest {
   boolean isEmpty_insert(@ForAll("graphs") Graph<A,B> g,
                          @ForAll("edges")  Tuple<A,A> e,
                          @ForAll("weights") B w){
-    return false;
+    return !g.insert(e, w).isEmpty();
   }
 
   // ∀ e:(A,A) : edgeIn(e,empty) = False
   @Property
   <A extends Comparable<A>,B>
   boolean edgeIn_empty(@ForAll("edges") Tuple<A,A> e){
-    return false;
+    return !this.<A, B>empty().edgeIn(e);
   }
 
   // ∀ g:Graph<A,B>, ∀ e1,e2:(A,A), ∀ w:B
@@ -117,13 +118,18 @@ public abstract class ADTGraphJqwikTest {
                         @ForAll("edges")  Tuple<A,A> e1,
                         @ForAll("edges")  Tuple<A,A> e2,
                         @ForAll("weights") B w){
-    return false;
+
+    if (e1.equals(e2)) {
+      return g.insert(e1, w).edgeIn(e2);
+    } else {
+      return g.insert(e1, w).edgeIn(e2) == g.edgeIn(e2);
+    }
   }
 
   // size(empty) = 0
   @Example
   boolean size_empty(){
-    return false;
+    return this.empty().size() == 0;
   }
 
   // ∀ g:Graph<A,B>, ∀e:(A,A), ∀ w:B
@@ -133,14 +139,15 @@ public abstract class ADTGraphJqwikTest {
   boolean size_insert(@ForAll("graphs") Graph<A,B> g,
                       @ForAll("edges")  Tuple<A,A> e,
                       @ForAll("weights") B w){
-    return false;
+    int expectedSize = !g.edgeIn(e) ? g.size() + 1 : g.size();
+    return g.insert(e, w).size() == expectedSize;
   }
 
   // ∀v:A : nodeIn(v,empty)	=	false
   @Property
   <A extends Comparable<A>,B>
   boolean nodeIn_empty(@ForAll("vertices") A v){
-    return false;
+    return !this.<A, B>empty().nodeIn(v);
   }
 
   //  ∀ g: Graph<A,B>,∀ v1,v2,v3 : A, ∀ w: B
@@ -152,13 +159,18 @@ public abstract class ADTGraphJqwikTest {
                         @ForAll("vertices")  A v2,
                         @ForAll("vertices")  A v3,
                         @ForAll("weights")   B w){
-    return false;
+    Tuple<A, A> edge = Tuple.tuple(v2, v3);
+    if (v1.equals(v2) || v1.equals(v3)) {
+      return g.insert(edge, w).nodeIn(v1);
+    } else {
+      return g.insert(edge, w).nodeIn(v1) == g.nodeIn(v1);
+    }
   }
 
   // nodes(empty)	=	Set.empty
   @Example
   boolean nodes_empty(){
-    return false;
+    return this.empty().nodes().isEmpty();
   }
 
   // ∀ g: Graph<A,B>,∀ v1,v2 : A, ∀ w: B
@@ -169,13 +181,15 @@ public abstract class ADTGraphJqwikTest {
                        @ForAll("vertices")  A v1,
                        @ForAll("vertices")  A v2,
                        @ForAll("weights")   B w){
-    return false;
+    Tuple<A, A> edge = Tuple.tuple(v1, v2);
+    set.Set<A> expectedNodes = g.nodes().insert(v1).insert(v2);
+    return g.insert(edge, w).nodes().isEqualTo(expectedNodes);
   }
 
   //edges(empty) = Map.empty
   @Example
   boolean edges_empty(){
-    return false;
+    return this.empty().edges().isEmpty();
   }
 
   // ∀ g:Graph<A,B>, ∀e:(A,A), ∀ w:B
@@ -185,14 +199,14 @@ public abstract class ADTGraphJqwikTest {
   boolean edges_insert(@ForAll("graphs") Graph<A,B> g,
                        @ForAll("edges")  Tuple<A,A> e,
                        @ForAll("weights") B w){
-    return false;
+    return g.insert(e, w).edges().isEqualTo(g.edges().insert(e, w));
   }
 
   //  ∀ v:A : adj(v,empty) =	Set.empty
   @Property
   <A extends Comparable<A>,B>
   boolean adj_empty(@ForAll("vertices") A v){
-    return false;
+    return this.<A, B>empty().adj(v).isEmpty();
   }
 
   // ∀ g: Graph<A,B>,∀ v1,v2,v3 : A, ∀ w: B
@@ -204,7 +218,13 @@ public abstract class ADTGraphJqwikTest {
                      @ForAll("vertices")  A v2,
                      @ForAll("vertices")  A v3,
                      @ForAll("weights")   B w){
-    return false;
+    Tuple<A, A> edge = Tuple.tuple(v2, v3);
+    if (v1.equals(v2)) {
+      set.Set<A> expectedAdj = g.adj(v1).insert(v3);
+      return g.insert(edge, w).adj(v1).isEqualTo(expectedAdj);
+    } else {
+      return g.insert(edge, w).adj(v1).isEqualTo(g.adj(v1));
+    }
   }
 
   // ∀ g:Graph<A,B>, ∀ e1,e2:(A,A), ∀ w1,w2:B
@@ -217,14 +237,20 @@ public abstract class ADTGraphJqwikTest {
                         @ForAll("edges")  Tuple<A,A> e2,
                         @ForAll("weights") B w1,
                         @ForAll("weights") B w2){
-    return false;
+    if (e1.equals(e2)) {
+      return g.insert(e1, w1).insert(e2, w2).equals(g.insert(e2, w2));
+    } else {
+      Graph<A, B> left = g.insert(e1, w1).insert(e2, w2);
+      Graph<A, B> right = g.insert(e2, w2).insert(e1, w1);
+      return left.equals(right);
+    }
   }
 
   // ∀ e:(A,A) : weight(e,empty)	= Result.empty
   @Property
   <A extends Comparable<A>,B>
   boolean weight_empty(@ForAll("edges") Tuple<A,A> e){
-    return false;
+    return this.<A, B>empty().weight(e).equals(fpinjava.Result.empty());
   }
 
   // ∀ g:Graph<A,B>, ∀ e1,e2:(A,A), ∀ w:B
@@ -235,7 +261,11 @@ public abstract class ADTGraphJqwikTest {
                         @ForAll("edges")  Tuple<A,A> e1,
                         @ForAll("edges")  Tuple<A,A> e2,
                         @ForAll("weights") B w){
-    return false;
+    if (e1.equals(e2)) {
+      return g.insert(e1, w).weight(e2).equals(fpinjava.Result.success(w));
+    } else {
+      return g.insert(e1, w).weight(e2).equals(g.weight(e2));
+    }
   }
 
   //  ∀ g:Graph<A,B>
@@ -243,6 +273,60 @@ public abstract class ADTGraphJqwikTest {
   @Property
   <A extends Comparable<A>,B>
   boolean sum_length_adj(@ForAll("graphs") Graph<A,B> g){
-    return false;
+
+    int sumOfAdjSizes = g.nodesList().foldl(acc -> u -> acc + g.adj(u).size(), 0);
+
+    int totalEdges = g.edges().size();
+    return sumOfAdjSizes == totalEdges;
+  }
+
+  private static class BfsTestData {
+    final String graphName;
+    final String startNode;
+    final list.List<String> expectedOrder;
+
+    BfsTestData(String graphName, String startNode, list.List<String> expectedOrder) {
+      this.graphName = graphName;
+      this.startNode = startNode;
+      this.expectedOrder = expectedOrder;
+    }
+  }
+
+
+  @Data
+  public Iterable<net.jqwik.api.Tuple.Tuple3<String, String, list.List<String>>> bfsTestData() {
+    return java.util.List.of(
+            net.jqwik.api.Tuple.of("gRL141", "1",
+                    list.List.list("1", "2", "3", "4", "6", "5")),
+
+            net.jqwik.api.Tuple.of("brd", "Bonn",
+                    list.List.list("Bonn", "Frankfurt", "Koeln", "Mannheim", "Fulda", "Giessen", "Wuerzburg", "Kassel", "Marburg")),
+
+            net.jqwik.api.Tuple.of("caliDG", "SanFrancisco",
+                    list.List.list("SanFrancisco", "Oakland", "Pacifica", "SanMateo", "SanRafael",
+                            "Hayward", "Richmond", "HalfMoonBay", "PaloAlto", "Fremont",
+                            "SantaCruz", "SantaClara", "SanJose", "ScottsValley", "Watsonville"))
+    );
+  }
+
+
+  @Property
+  @FromData("bfsTestData")
+  public boolean testBreadthFirstSearchDataDriven(
+          @ForAll String graphName,
+          @ForAll String startNode,
+          @ForAll List<String> expectedOrder) {
+
+    Graph<String, Integer> graph = switch (graphName) {
+      case "gRL141" -> gRL141;
+      case "brd" -> brd;
+      case "caliDG" -> caliDG;
+      default -> throw new IllegalArgumentException("Unbekannter Graph: " + graphName);
+    };
+
+    List<String> actualOrder = MapGraph.breadthFirstSearch(graph, startNode);
+
+    return actualOrder.isEqualTo(expectedOrder);
   }
 }
+

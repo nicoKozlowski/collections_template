@@ -3,7 +3,7 @@ package tuple;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Tuple<A,B> implements Serializable {
+public class Tuple<A,B> implements Serializable, Comparable<Tuple<A, A>> {
 
   public final A fst;
   public final B snd;
@@ -44,5 +44,16 @@ public class Tuple<A,B> implements Serializable {
   
   public static <A,B> Tuple<A,B> tuple(A fst, B snd){
   	return new Tuple<>(fst,snd);
+  }
+
+  @Override
+  public int compareTo(Tuple<A, A> o) {
+
+    int firstCompare = ((Comparable<A>) this.fst).compareTo(o.fst);
+    if (firstCompare != 0) {
+      return firstCompare;
+    }
+
+    return ((Comparable<A>) this.snd).compareTo(o.snd);
   }
 }
